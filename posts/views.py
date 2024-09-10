@@ -3,7 +3,11 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import generics
 from .models import Director, Movie, Review
-from .serializers import DirectorSerializer, MovieSerializer, ReviewSerializer
+from .serializers import (
+    DirectorSerializer,
+    MovieSerializer,
+    ReviewSerializer,
+    MovieReviewSerializer,)
 
 # Список всех режиссеров
 class DirectorListView(generics.ListCreateAPIView):
@@ -34,3 +38,12 @@ class ReviewListView(generics.ListCreateAPIView):
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+
+class MovieReviewView(generics.ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieReviewSerializer
+
+class DirectorListView(generics.ListAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer

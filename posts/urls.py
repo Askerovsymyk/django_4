@@ -2,7 +2,13 @@
 
 
 from django.urls import path
-from .views import DirectorListView, DirectorDetailView, MovieListView, MovieDetailView, ReviewListView, ReviewDetailView
+from .views import (DirectorListView,
+                    DirectorDetailView,
+                    MovieListView,
+                    MovieDetailView,
+                    ReviewListView,
+                    ReviewDetailView,
+                    MovieReviewView)
 
 urlpatterns = [
     path('directors/', DirectorListView.as_view(), name='director-list'),
@@ -11,4 +17,5 @@ urlpatterns = [
     path('movies/<int:id>/', MovieDetailView.as_view(), name='movie-detail'),
     path('reviews/', ReviewListView.as_view(), name='review-list'),
     path('reviews/<int:id>/', ReviewDetailView.as_view(), name='review-detail'),
+    path('movies/reviews/', MovieReviewView.as_view(), name='movie-review'),
 ]

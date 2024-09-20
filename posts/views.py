@@ -135,3 +135,25 @@ def modify_or_delete_review(request, id):
     if request.method == 'DELETE':
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def create_director(request):
+    serializer = DirectorSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_director(request, id):
+    try:
+        director = Director.objects.get(id=id)
+    except Director.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = DirectorSerializer(director, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

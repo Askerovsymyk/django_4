@@ -41,7 +41,7 @@ class MovieSerializer(serializers.ModelSerializer):
     def validate_release_date(self, value):
         if not value:
             raise serializers.ValidationError("Release date is required.")
-        if value.year < 1888:  # The year of the first film
+        if value.year < 1888:
             raise serializers.ValidationError("Release date must be after 1888.")
         return value
 

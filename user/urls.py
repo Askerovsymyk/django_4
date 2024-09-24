@@ -2,9 +2,10 @@
 
 
 from django.urls import path
-from user.views import authenticate_api_view, registration_api_view
+from user.views import register_user, login_user, confirm_user
 
 urlpatterns = [
-    path('registration/', registration_api_view, name='registration-api-view'),
-    path('authentication/', authenticate_api_view, name= 'authentication-api-view'),
+    path('register/', register_user, name='register_user'),
+    path('login/', login_user, name='login_user'),
+    path('confirm/', confirm_user, name='confirm_user'),
 ]

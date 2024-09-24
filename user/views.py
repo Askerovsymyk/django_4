@@ -1,46 +1,46 @@
 
-from django.shortcuts import render
+
 from rest_framework.decorators import api_view
-from user.serializers import UserCreateSerializer, UserAuthenticationSerializer
-from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authtoken.models import Token
-# Create your views here.
+from .serializers import RegistrationSerializer, LoginSerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+@api_view(['POST'])
+def register_user(request):
+    serializer = RegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({'message': 'User registered. Check your email for confirmation code.', 'confirmation_code': user.confirmation_code}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
-def authenticate_api_view(request):
-    # VALIDATE
-    serializer = UserAuthenticationSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    # AUTHENTICATION
-    username = serializer.validated_data['username']
-    password = serializer.validated_data['password']
+def confirm_user(request):
+    code = request.data.get('confirmation_code')
+    username = request.data.get('username')
 
-    if username and password:
-        try:
-            token = User.objects.get(username=username)
-        except:
-            token = Token.objects.create(username=username)
-            return Response(data={'key': token.key})
-        return  Response(status=status.HTTP_401_UNAUTHORIZED, data={'error': 'User credentials are wrong'})
+    if not code or not username:
+        return Response({'error': 'Confirmation code and username are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-
-
+    if user.confirmation_code == code:
+        user.is_active = True
+        user.confirmation_code = None  # Удаляем код подтверждения после успешной активации
+        user.save()
+        return Response({'message': 'User confirmed successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Invalid confirmation code.'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def registration_api_view(request):
-
-    # VALIDATION
-    serializer = UserCreateSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-
-    # CREATE USER
-    username = serializer.validated_data['username']
-    password = serializer.validated_data['password']
-    user = User.objects.create_user(username=username, password=password)
-
-    # RETURN RESPONSE
-    return Response(status=status.HTTP_201_CREATED, data={'user_id': user.id})
+def login_user(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

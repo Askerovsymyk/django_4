@@ -26,7 +26,6 @@ urlpatterns = [
     path('movies/reviews/', MovieReviewView.as_view(), name='movie-review'),
 
     path('api/v1/directors/', create_director, name='create_director'),
-
     path('api/v1/directors/<int:id>/', modify_or_delete_director, name='modify_or_delete_director'),
 
     path('api/v1/movies/', create_movie, name='create_movie'),

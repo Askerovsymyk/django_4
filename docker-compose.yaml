@@ -1,0 +1,27 @@
+version: '3'
+services:
+  web_afisha_beckend:
+    build:
+      context: .
+    container_name:  web_afisha_beckend
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - web_afisha_beckend_db
+  web_afisha_beckend_db:
+    image: 'postgres:11-alpine3.15'
+    hostname: localhost
+    environment:
+      POSTGRES_USER: geeks_user
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: web_afisha_beckend_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - 'web-data:/var/lib/postgres/data'
+volumes:
+  web-data:
+
+
+
